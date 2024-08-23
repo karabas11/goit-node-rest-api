@@ -46,6 +46,7 @@ export const userSignupShema = Joi.object({
 export const userSigninShema = Joi.object({
 	password: Joi.string().min(6).required(),
 	email: Joi.string().pattern(mailformat).required(),
+  subscription: Joi.string().valid("starter", "pro", "business"),
 });
 
 const User = model("user", userSchema);
