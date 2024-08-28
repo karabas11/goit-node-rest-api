@@ -8,25 +8,27 @@ import { ctrlWrapper } from "../decorators/index.js";
 const { JWT_SECRET } = process.env;
 
 const signup = async (req, res) => {
-	const { email, password, subscription } = req.body;
-	const user = await User.findOne({ email });
-	if (user) {
-		throw HttpError(409, "Email already in use");
-	}
-	const hashPassword = await bcrypt.hash(password, 10);
-	const newUser = await User.create({ ...req.body, password: hashPassword });
+  const { email, password, subscription } = req.body;
+  const user = await User.findOne({ email });
+  if (user) {
+    throw HttpError(409, "Email in use");
+  }
+  const hashPassword = await bcrypt.hash(password, 10);
+  const newUser = await User.create({ ...req.body, password: hashPassword });
 
-	res.status(201).json({
-		email: newUser.email,
-		subscription: "starter",
-	});
+  res.status(201).json({
+    user: {
+      email,
+      subscription: "starter",
+    },
+  });
 };
 
 const signin = async (req, res) => {
 	const { email, password } = req.body;
 	const user = await User.findOne({ email });
 	if (!user) {
-		throw HttpError(401);
+		throw HttpError(401, "Email or password is wrong");
 	}
 	const passwwordCompare = await bcrypt.compare(password, user.password);
 	if (!passwwordCompare) {
